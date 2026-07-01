@@ -167,7 +167,7 @@ class RandomPromptBuilderNode:
                     "ignore", "any", "ghibli", "naruto", "bleach", "90s vhs anime", "chibi",
                     "ecchi manga", "dark fantasy anime", "dragon ball", "one piece",
                     "neon genesis evangelion", "cyberpunk edgerunners", "demon slayer",
-                    "death note", "attack on titan", "pokémon"
+                    "death note", "attack on titan", "pokemon"
                 ], {"default": "ignore"}),
                 
                 # --- Character Overlays ---

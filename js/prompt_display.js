@@ -1,14 +1,14 @@
 import { app } from "../../scripts/app.js";
 import { ComfyWidgets } from "../../scripts/widgets.js";
 
-console.log("🎲 RandomPromptBuilder JS extension loaded");
+console.log("RandomPromptBuilder JS extension loaded");
 
 app.registerExtension({
 	name: "Comfy.RandomPromptBuilder.PromptDisplay",
 
 	async beforeRegisterNodeDef(nodeType, nodeData, app) {
 
-		// 1. Handle PromptDisplayNode (osobny node do wyświetlania)
+		// 1. Handle PromptDisplayNode display updates
 		if (nodeData.name === "PromptDisplayNode") {
 			const onExecuted = nodeType.prototype.onExecuted;
 			nodeType.prototype.onExecuted = function (message) {
@@ -24,17 +24,17 @@ app.registerExtension({
 			};
 		}
 
-		// 2. Handle RandomPromptBuilder (główny node generujący)
+		// 2. Handle RandomPromptBuilder prompt preview
 		if (nodeData.name === "RandomPromptBuilder") {
 
-			// Hook wywoływany przy tworzeniu node'a - tworzy widget wyświetlający
+			// Hook called when the node is created; adds a read-only display widget
 			const onNodeCreated = nodeType.prototype.onNodeCreated;
 			nodeType.prototype.onNodeCreated = function () {
 				onNodeCreated?.apply(this, arguments);
 
-				// Sprawdź czy widget już istnieje
+				// Check whether the widget already exists
 				if (!this.widgets.find(w => w.name === "generated_prompt_output")) {
-					// Utwórz nowy widget tekstowy (tylko do odczytu)
+					// Create a new read-only text widget
 					const widget = ComfyWidgets["STRING"](
 						this,
 						"generated_prompt_output",
@@ -42,7 +42,7 @@ app.registerExtension({
 						app
 					).widget;
 
-					// Stylizacja widgetu
+					// Widget styling
 					widget.inputEl.readOnly = true;
 					widget.inputEl.style.opacity = "0.9";
 					widget.inputEl.style.backgroundColor = "#1a2a1a";
@@ -50,21 +50,21 @@ app.registerExtension({
 					widget.inputEl.style.minHeight = "100px";
 					widget.inputEl.style.fontFamily = "monospace";
 					widget.inputEl.style.fontSize = "11px";
-					widget.inputEl.placeholder = "🎲 Generated prompt will appear here after execution...";
+					widget.inputEl.placeholder = "Generated prompt will appear here after execution...";
 
-					// Dostosuj rozmiar node'a
+					// Adjust the node size
 					this.setSize([this.size[0], this.computeSize()[1]]);
 				}
 			};
 
-			// Hook wywoływany po wykonaniu node'a - aktualizuje widget
+			// Hook called after execution; updates the widget
 			const onExecuted = nodeType.prototype.onExecuted;
 			nodeType.prototype.onExecuted = function (message) {
 				onExecuted?.apply(this, arguments);
 
 				console.log("[RandomPromptBuilder] onExecuted triggered, message:", message);
 
-				// Pobierz tekst promptu z message (sprawdź różne możliwe klucze)
+				// Read prompt text from the message payload
 				let promptText = null;
 
 				if (message?.generated_prompt?.[0]) {
@@ -76,24 +76,24 @@ app.registerExtension({
 				}
 
 				if (promptText) {
-					// Znajdź widget do wyświetlania
+					// Find the display widget
 					const widget = this.widgets.find(
 						w => w.name === "generated_prompt_output"
 					);
 
 					if (widget) {
 						widget.value = promptText;
-						console.log("[RandomPromptBuilder] ✅ Widget updated with prompt:",
+						console.log("[RandomPromptBuilder] Widget updated with prompt:",
 							promptText.substring(0, 100) + "...");
 					} else {
-						console.warn("[RandomPromptBuilder] ⚠️ Widget 'generated_prompt_output' not found!");
+						console.warn("[RandomPromptBuilder] Widget 'generated_prompt_output' not found!");
 						console.log("Available widgets:", this.widgets?.map(w => w.name));
 					}
 
-					// Odśwież canvas
+					// Refresh the canvas
 					this.setDirtyCanvas(true, true);
 				} else {
-					console.warn("[RandomPromptBuilder] ⚠️ No prompt text found in message");
+					console.warn("[RandomPromptBuilder] No prompt text found in message");
 				}
 			};
 		}

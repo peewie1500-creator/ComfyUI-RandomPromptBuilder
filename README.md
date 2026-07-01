@@ -43,12 +43,12 @@ Using local GGUF language models via `llama-cpp-python`, this node transforms si
 Define your subject with precision:
 
 - **Gender**: male, female, non-binary, couple, or any
-- **Age Range**: 18-25, 26-35, 36-50, 50+, or any
-- **Body Type**: slim, average, athletic, curvy, muscular, plus-size, or any
+- **Age Range**: 18s, 25s, 30s, 40s, 50s, 60s, 70+, or any
+- **Body Type**: slim, curvy, athletic, instagram model, fat, muscular, big muscular, or any
 - **Ethnicity**: caucasian, asian, african, hispanic, middle eastern, mixed, or any
 - **Height**: short, average, tall, or any
 - **Physical Attributes**: breast size, muscle definition (NSFW-aware)
-- **Scene Type**: solo, duo, group, or any
+- **Scene Type**: solo, couple, threesome, or group
 - **Character Overlays**: furry, monster, sci-fi character traits
 - **Detailed Attributes**: hair style, hair color, eye color, facial hair, roleplay scenarios
 
@@ -124,7 +124,7 @@ Navigate to your ComfyUI custom nodes directory and clone this repository:
 
 ```bash
 cd ComfyUI/custom_nodes/
-git clone https://github.com/yourusername/ComfyUI-RandomPromptBuilder.git
+git clone https://github.com/btitkin/ComfyUI-RandomPromptBuilder.git
 ```
 
 **Step 2: Install Python dependencies**
@@ -200,12 +200,12 @@ Place GGUF model files in the `ComfyUI/models/LLM/` directory.
 
 **Step 1: Add the Node**
 
-Right-click in ComfyUI → Add Node → Random → Random Prompt Builder (GGUF)
+Right-click in ComfyUI -> Add Node -> PromptBuilder -> Random Prompt Builder (GGUF)
 
 **Step 2: Connect Outputs**
 
-- `POSITIVE_PROMPT` → `CLIPTextEncode` (positive)
-- `NEGATIVE_PROMPT` → `CLIPTextEncode` (negative)
+- `POSITIVE_PROMPT` -> `CLIPTextEncode` (positive)
+- `NEGATIVE_PROMPT` -> `CLIPTextEncode` (negative)
 - Connect to your KSampler or other sampling nodes
 
 **Step 3: Configure Settings**
@@ -228,13 +228,13 @@ Click "Queue Prompt" in ComfyUI to generate both positive and negative prompts.
 
 ```
 [Random Prompt Builder (GGUF)]
-    ↓ POSITIVE_PROMPT
+    -> POSITIVE_PROMPT
 [CLIP Text Encode (Prompt)]
-    ↓ CONDITIONING
-[KSampler] ← + other inputs
-    ↓ LATENT
+    -> CONDITIONING
+[KSampler] <- + other inputs
+    -> LATENT
 [VAE Decode]
-    ↓ IMAGE
+    -> IMAGE
 [Save Image]
 ```
 
@@ -252,7 +252,7 @@ Click "Queue Prompt" in ComfyUI to generate both positive and negative prompts.
 
 **Character Controls:**
 - Gender: `female`
-- Age: `18-25`
+- Age: `18s`
 - Body Type: `slim`
 
 **Structured Inputs:**
@@ -263,7 +263,7 @@ Click "Queue Prompt" in ComfyUI to generate both positive and negative prompts.
 
 **Generated Output:**
 ```
-score_9, score_8_up, score_7_up, masterpiece, best quality, highres, 18-25 years old, female, slim body type, magical girl, long pink hair, bright eyes, cheerful expression, frilly dress with ribbons, cherry blossom garden
+score_9, score_8_up, score_7_up, masterpiece, best quality, highres, 18s, female, slim body type, magical girl, long pink hair, bright eyes, cheerful expression, frilly dress with ribbons, cherry blossom garden
 ```
 
 ---
@@ -280,7 +280,7 @@ score_9, score_8_up, score_7_up, masterpiece, best quality, highres, 18-25 years
 
 **Character Controls:**
 - Gender: `female`
-- Age: `26-35`
+- Age: `30s`
 - Body Type: `athletic`
 - Ethnicity: `asian`
 
@@ -295,7 +295,7 @@ score_9, score_8_up, score_7_up, masterpiece, best quality, highres, 18-25 years
 
 **Generated Output:**
 ```
-photorealistic, high detail, professional photography, best quality, 8k, BREAK 26-35 years old, asian, female, athletic body type, BREAK warrior princess, long flowing black hair, determined expression, battle scars, BREAK looking at camera with confidence, dynamic stance, hand on sword hilt, BREAK ornate silver armor with red accents, flowing cape, BREAK ancient temple ruins, BREAK mystical fog, moonlight filtering through pillars
+photorealistic, high detail, professional photography, best quality, 8k, BREAK 30s, asian, female, athletic body type, BREAK warrior princess, long flowing black hair, determined expression, battle scars, BREAK looking at camera with confidence, dynamic stance, hand on sword hilt, BREAK ornate silver armor with red accents, flowing cape, BREAK ancient temple ruins, BREAK mystical fog, moonlight filtering through pillars
 ```
 
 ---
@@ -327,9 +327,9 @@ A cinematic scene of a cyberpunk detective with augmented eyes and a weathered f
 | Parameter | Type | Default | Range | Description |
 |-----------|------|---------|-------|-------------|
 | llm_model | Dropdown | - | - | GGUF model from `models/LLM` folder |
-| gpu_layers | INT | 20 | 0-100 | Number of layers to offload to GPU (0=CPU only) |
+| gpu_layers | INT | 20 | 0-200 | Number of layers to offload to GPU (0=CPU only) |
 | n_ctx | INT | 2048 | 512-32768 | Context window size |
-| seed | INT | 0 | 0-∞ | Random seed for reproducibility |
+| seed | INT | 0 | 0-18446744073709551615 | Random seed for reproducibility |
 | control_after_generate | Dropdown | randomize | - | "fixed" or "randomize" seed after generation |
 
 ### LLM Tuning Parameters
@@ -346,8 +346,8 @@ A cinematic scene of a cyberpunk detective with augmented eyes and a weathered f
 
 | Parameter | Type | Default | Options |
 |-----------|------|---------|---------|
-| target_model | Dropdown | SDXL | Pony, SDXL, Flux, Anime, Custom |
-| style_preset | Dropdown | Photographic | Photographic, Cinematic, Anime, Digital Art, Comic Book, Fantasy, Cyberpunk, 3D Render, Oil Painting |
+| target_model | Dropdown | SDXL / SD 1.5 (Tags) | Pony (Score Tags), SDXL / SD 1.5 (Tags), Flux / SD3 (Natural), Wan (Natural), General (Tags), General (Natural) |
+| style_preset | Dropdown | Photographic | None, Photographic, Cinematic, Anime, Digital Art, Comic Book, Fantasy, Cyberpunk, 3D Render, Oil Painting |
 | use_quality_tags | BOOLEAN | True | - |
 | use_break | BOOLEAN | False | - |
 
@@ -355,38 +355,41 @@ A cinematic scene of a cyberpunk detective with augmented eyes and a weathered f
 
 | Parameter | Type | Default | Options |
 |-----------|------|---------|---------|
-| main_style | Dropdown | any | any, realistic, anime, semi-realistic |
-| sub_style_realistic | Dropdown | any | any, professional, amateur, flash, film |
-| sub_style_anime | Dropdown | any | any, ghibli, modern, vintage, shoujo, shounen |
+| main_style | Dropdown | any | any, realistic, anime |
+| sub_style_realistic | Dropdown | ignore | ignore, any, film photography, webcam, spycam, cctv, smartphone, polaroid, analog, editorial, portrait studio, street photography, fashion editorial, professional, amateur, flash |
+| sub_style_anime | Dropdown | ignore | ignore, any, ghibli, naruto, bleach, 90s vhs anime, chibi, ecchi manga, dark fantasy anime, dragon ball, one piece, neon genesis evangelion, cyberpunk edgerunners, demon slayer, death note, attack on titan, pokemon |
 
 ### NSFW Parameters
 
 | Parameter | Type | Default | Range/Options |
 |-----------|------|---------|---------------|
 | nsfw_mode | Dropdown | Safe | safe, nsfw, hardcore |
-| nsfw_level | INT | 0 | 0-10 |
-| hardcore_level | INT | 0 | 0-10 |
+| nsfw_level | INT | 5 | 1-10 |
+| hardcore_level | INT | 5 | 1-10 |
 
 ### Character Control Parameters
 
-All character parameters support "any" for random selection or "ignore" to exclude from prompt.
+Most character parameters support "any" for random selection or "ignore" to exclude them from the prompt. `scene_type` uses a fixed scene-size selection.
 
 | Parameter | Options |
 |-----------|---------|
-| scene_type | any, solo, duo, group, ignore |
-| gender | any, male, female, non-binary, couple, ignore |
-| age | any, 18-25, 26-35, 36-50, 50+, ignore |
-| body_type | any, slim, average, athletic, curvy, muscular, plus-size, ignore |
-| ethnicity | any, caucasian, asian, african, hispanic, middle eastern, mixed, ignore |
-| height | any, short, average, tall, ignore |
-| breast_size | any, small, medium, large, huge, ignore |
-| muscle_definition | any, soft, toned, defined, ripped, ignore |
+| scene_type | solo, couple, threesome, group |
+| gender | ignore, any, male, female, mixed, couple, futanari, trans female, trans male, femboy, nonbinary, furry, monster, sci-fi |
+| age | ignore, any, 18s, 25s, 30s, 40s, 50s, 60s, 70+ |
+| body_type | ignore, any, slim, curvy, athletic, instagram model, fat, muscular, big muscular |
+| ethnicity | ignore, any, caucasian, european, scandinavian, slavic, mediterranean, asian, japanese, chinese, korean, indian, african, hispanic, middle eastern, native american |
+| height | ignore, any, very short, short, average, tall |
+| breast_size | ignore, any, flat, small, medium, large, huge, gigantic |
+| hips_size | ignore, any, narrow, average, wide, extra wide |
+| butt_size | ignore, any, flat, small, average, large, bubble |
+| penis_size | ignore, any, small, average, large, huge, horse-hung |
+| muscle_definition | ignore, any, soft, toned, defined, ripped, bodybuilder |
 | hair_style | Free text |
 | hair_color | Free text |
 | eye_color | Free text |
-| facial_hair | any, clean_shaven, stubble, beard, mustache, goatee, ignore |
-| character_style | Free text |
-| roleplay | Free text |
+| facial_hair | ignore, any, clean-shaven, stubble, goatee, mustache, full beard |
+| character_style | Preset dropdown |
+| roleplay | Preset dropdown |
 
 ### Character Overlay Parameters
 
@@ -400,7 +403,7 @@ All character parameters support "any" for random selection or "ignore" to exclu
 
 | Parameter | Type | Default | Range | Description |
 |-----------|------|---------|-------|-------------|
-| enhance_round | INT | 0 | 0-3 | Number of enhancement iterations |
+| enhance_round | INT | 0 | 0-10 | Number of enhancement iterations |
 | locked_phrases | STRING | "" | - | Phrases preserved across enhancement rounds |
 | enhance_person | BOOLEAN | True | - | Enhance character descriptions |
 | enhance_pose | BOOLEAN | True | - | Enhance pose descriptions |
@@ -425,7 +428,7 @@ All are multiline text inputs:
 | Parameter | Type | Default | Range | Description |
 |-----------|------|---------|-------|-------------|
 | mandatory_tags | STRING | "" | - | Tags forced into output |
-| negative_prompt | STRING | "" | - | Custom negative prompt output |
+| negative_prompt | STRING | "ugly, bad anatomy, blurry, low quality, worst quality" | - | Custom negative prompt output |
 | max_tokens | INT | 512 | 128-2048 | Maximum tokens for LLM generation |
 | aspect_ratio | Dropdown | none | - | Target image aspect ratio |
 | additional_params | STRING | "" | - | Additional instructions for the LLM |
@@ -577,7 +580,7 @@ The core prompt generation logic and LLM system prompts are shared between both 
 
 ## Changelog
 
-### v3.0 - Current (2025-12-03)
+### v3.0 - Current
 - Feature parity with main desktop application (98%+)
 - Added style filter system (main style + realistic/anime sub-styles)
 - Added enhancement iteration system (0-3 rounds + locked phrases)
@@ -588,7 +591,7 @@ The core prompt generation logic and LLM system prompts are shared between both 
 - Improved LLM system prompts for better output quality
 - Better error handling and user feedback
 
-### v2.0 - Enhanced (2025-11-30)
+### v2.0 - Enhanced
 - Critical fix: Returns single string instead of list (fixes CLIPTextEncode error)
 - Added structured prompt categories (attributes, action, background)
 - Added character controls (gender, age, body_type, ethnicity, height, physical attributes)
@@ -599,7 +602,7 @@ The core prompt generation logic and LLM system prompts are shared between both 
 - Changed to control_after_generate for seed management
 - Better error handling and model caching
 
-### v1.0 - Initial (2024-11-29)
+### v1.0 - Initial
 - Initial release with basic GGUF prompt generation
 - Support for multiple target model formats
 - Basic seed and creativity controls
@@ -623,7 +626,7 @@ This is helpful for reviewing prompts before they're encoded.
 
 ## License
 
-MIT License - See LICENSE file for details.
+MIT License.
 
 This project is a ComfyUI adaptation of the Random Prompt Builder desktop application. Both projects are developed by btitkin.
 
@@ -673,6 +676,6 @@ When reporting issues, please include:
 
 For questions, issues, or discussions:
 
-- GitHub Issues: [Report bugs or request features](https://github.com/yourusername/ComfyUI-RandomPromptBuilder/issues)
-- Discussions: [Ask questions and share workflows](https://github.com/yourusername/ComfyUI-RandomPromptBuilder/discussions)
+- GitHub Issues: [Report bugs or request features](https://github.com/btitkin/ComfyUI-RandomPromptBuilder/issues)
+- Discussions: [Ask questions and share workflows](https://github.com/btitkin/ComfyUI-RandomPromptBuilder/discussions)
 
